@@ -1,9 +1,6 @@
 import org.junit.After;
-import org.junit.Before;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
-
-import org.junit.*;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -21,28 +18,6 @@ public class SeleniumTest {
     private Properties properties;
     private String[] staticPages;
 
-//    @Before
-//    public void setup() {
-//        System.setProperty("webdriver.chrome.driver", "/Users/lemanjavadova/Selenium/chromedriver");
-//        ChromeOptions options = new ChromeOptions();
-//        options.addArguments("--disable-notifications");
-//
-//        this.driver = new ChromeDriver(options);
-//        this.driver.manage().window().maximize();
-//        this.driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS); // Set page load timeout to 30 seconds
-//        this.driver.manage().timeouts().setScriptTimeout(10, TimeUnit.SECONDS); // Set script execution timeout to 10 seconds
-//        this.driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS); // Set implicit wait timeout to 5 seconds
-//
-////        this.mainPage = new MainPage(this.driver);
-////        this.properties = new Properties();
-////        try (InputStream input = new FileInputStream("config.properties")) {
-////            properties.load(input);
-////            properties.list(System.out);
-////        } catch (IOException e) {
-////            e.printStackTrace();
-////        }
-//    }
-
     @BeforeMethod
     public void initTest() {
         System.setProperty("webdriver.chrome.driver", "/Users/lemanjavadova/Selenium/chromedriver");
@@ -51,7 +26,7 @@ public class SeleniumTest {
 
         this.driver = new ChromeDriver(options);
         this.driver.manage().window().maximize();
-        this.driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+        this.driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
         this.driver.manage().timeouts().setScriptTimeout(10, TimeUnit.SECONDS);
         this.driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
@@ -65,7 +40,15 @@ public class SeleniumTest {
         mainPage = new MainPage(this.driver);
     }
 
-    //@Test
+    public DashboardPage logIN(){
+        AccessAccountPage accessAccountPage = mainPage.accessAccount();
+        LoginPage loginPage = accessAccountPage.login();
+        String email = properties.getProperty("user.email");
+        String password = properties.getProperty("user.password");
+        return loginPage.logIn(email, password);
+    }
+
+    @Test
     public void testStaticPageLoad() {
         String staticPagesString = properties.getProperty("static.pages");
         staticPages = staticPagesString.split(",");
@@ -79,7 +62,7 @@ public class SeleniumTest {
     }
 
     // Hover test
-    //@Test
+    @Test
     public void testHoverOverSubMenu() {
         MainPage mainPage = new MainPage(this.driver);
         mainPage.hoverOverSubMenu();
@@ -87,7 +70,7 @@ public class SeleniumTest {
     }
 
     // Send a form
-    //@Test
+    @Test
     public void testRequestDemoPage() {
         MainPage mainPage = new MainPage(this.driver);
         RequestDemoPage requestDemoPage = mainPage.requestDemo();
@@ -106,7 +89,7 @@ public class SeleniumTest {
     }
 
     // Registration form
-    //@Test
+    @Test
     public void testRegistrationPage() {
         MainPage mainPage = new MainPage(this.driver);
         GetStartedPage getStartedPage = mainPage.signUp();
@@ -119,89 +102,10 @@ public class SeleniumTest {
         Assert.assertTrue(dashboardPage.getBodyText().contains("Welcome "+name.split(" ")[0]+"!"));
     }
 
-//    @Test
-//    public void testMainFooter() {
-//        //mainPage = new MainPage(driver);
-//        MainPage mainPage = new MainPage(this.driver);
-//        properties = new Properties();
-//        try (InputStream input = new FileInputStream("config.properties")) {
-//            properties.load(input);
-//            properties.list(System.out);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        String footerTextContains = properties.getProperty("footer.text.contains");
-//        Assert.assertTrue(mainPage.getFooterText().contains(footerTextContains));
-//    }
-
-
     @Test
     public void testPageTitle() {
         String pageTitleContains = properties.getProperty("page.title.contains");
         Assert.assertTrue(mainPage.getPageTitle().contains(pageTitleContains));
-    }
-
-
-    @Test(dependsOnMethods = "testUpdateUserInfoPage")
-    public void testUserProfilePage(UserProfilePage userProfileEditIntroPage) {
-        // Logout
-        LogoutPage logoutPage = userProfileEditIntroPage.logout();
-        String logoutBodyTextContains = properties.getProperty("logout.body.text.contains");
-        Assert.assertTrue(logoutPage.getBodyText().contains(logoutBodyTextContains));
-
-        // History test (browser back button)
-        logoutPage.navigateBackToDashboardPage();
-        String dashboardPageTitle = properties.getProperty("dashboard.page.title");
-        Assert.assertEquals(dashboardPageTitle, this.driver.getTitle());
-
-        JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-        String javascriptCode = "alert('Test completed.');";
-        jsExecutor.executeScript(javascriptCode);
-    }
-
-    @Test(dependsOnMethods = "testUserProfilePage")
-    public void testUpdateUserInfoPage(UserProfilePage userProfilePage) {
-        // Form sending with user
-        String firstname = properties.getProperty("user.profile.edit.first.name");
-        String lastname = properties.getProperty("user.profile.edit.last.name");
-        String headline = properties.getProperty("user.profile.edit.headline");
-        UserProfilePage userProfileEditIntroPage = userProfilePage.editIntro(firstname, lastname, headline);
-        Assert.assertTrue(userProfileEditIntroPage.getBodyText().contains(firstname));
-        Assert.assertTrue(userProfileEditIntroPage.getBodyText().contains(lastname));
-        Assert.assertTrue(userProfileEditIntroPage.getBodyText().contains(headline));
-    }
-
-    @Test(dependsOnMethods = "testDashboardPage")
-    public void testUserProfilePage(DashboardPage dashboardPage) {
-        UserProfilePage userProfilePage = dashboardPage.checkProfile();
-        String userProfileBodyTextContains = properties.getProperty("user.profile.body.text.contains");
-        Assert.assertTrue(userProfilePage.getBodyText().contains(userProfileBodyTextContains));
-    }
-
-    @Test(dependsOnMethods = "testLoginPage")
-    public void testDashboardPage(LoginPage loginPage) {
-        // Fill simple form and send (eg. Login)
-        String email = properties.getProperty("user.email");
-        String password = properties.getProperty("user.password");
-        DashboardPage dashboardPage = loginPage.logIn(email, password);
-        String dashboardBodyTextContains = properties.getProperty("dashboard.body.text.contains");
-        Assert.assertTrue(dashboardPage.getBodyText().contains(dashboardBodyTextContains));
-    }
-
-    @Test(dependsOnMethods = "testAccessAccountPage")
-    public void testLoginPage(AccessAccountPage accessAccountPage) {
-        // Assert login body text
-        LoginPage loginPage = accessAccountPage.login();
-        String loginBodyTextContains = properties.getProperty("login.body.text.contains");
-        Assert.assertTrue(loginPage.getBodyText().contains(loginBodyTextContains));
-    }
-
-    @Test(dependsOnMethods = "testMainFooterText")
-    public void testAccessAccountPage() {
-        // Assert access account body text
-        AccessAccountPage accessAccountPage = mainPage.accessAccount();
-        String accessAccountBodyTextContains = properties.getProperty("access.account.body.text.contains");
-        Assert.assertTrue(accessAccountPage.getBodyText().contains(accessAccountBodyTextContains));
     }
 
     @Test
@@ -210,52 +114,31 @@ public class SeleniumTest {
         Assert.assertTrue(mainPage.getFooterText().contains(footerTextContains));
     }
 
-
-
-    //@Test
-    public void LoggedInUserTests() {
-        MainPage mainPage = new MainPage(this.driver);
-
-        String footerTextContains = properties.getProperty("footer.text.contains");
-        Assert.assertTrue(mainPage.getFooterText().contains(footerTextContains));
-
-        // Reading the page title
-        String pageTitleContains = properties.getProperty("page.title.contains");
-        Assert.assertTrue(mainPage.getPageTitle().contains(pageTitleContains));
-
-        // Assert access account body text
-        AccessAccountPage accessAccountPage = mainPage.accessAccount();
-        String accessAccountBodyTextContains = properties.getProperty("access.account.body.text.contains");
-        Assert.assertTrue(accessAccountPage.getBodyText().contains(accessAccountBodyTextContains));
-
-        // Assert login body text
-        LoginPage loginPage = accessAccountPage.login();
-        String loginBodyTextContains = properties.getProperty("login.body.text.contains");
-        Assert.assertTrue(loginPage.getBodyText().contains(loginBodyTextContains));
-
-        // Fill simple form and send (eg. Login)
-        String email = properties.getProperty("user.email");
-        String password = properties.getProperty("user.password");
-        DashboardPage dashboardPage = loginPage.logIn(email, password);
+    @Test(dependsOnMethods = "testMainFooterText")
+    public void testLogin() {
+        DashboardPage dashboardPage = logIN();
         String dashboardBodyTextContains = properties.getProperty("dashboard.body.text.contains");
         Assert.assertTrue(dashboardPage.getBodyText().contains(dashboardBodyTextContains));
+    }
 
-        UserProfilePage userProfilePage = dashboardPage.checkProfile();
-        String userProfileBodyTextContains = properties.getProperty("user.profile.body.text.contains");
-        Assert.assertTrue(userProfilePage.getBodyText().contains(userProfileBodyTextContains));
-
-        // Form sending with user
+    @Test(dependsOnMethods = "testLogin")
+    public void testUserProfile() {
+        DashboardPage dashboardPage = logIN();
         String firstname = properties.getProperty("user.profile.edit.first.name");
         String lastname = properties.getProperty("user.profile.edit.last.name");
         String headline = properties.getProperty("user.profile.edit.headline");
+        UserProfilePage userProfilePage = dashboardPage.checkProfile();
         UserProfilePage userProfileEditIntroPage = userProfilePage.editIntro(firstname, lastname, headline);
         Assert.assertTrue(userProfileEditIntroPage.getBodyText().contains(firstname));
         Assert.assertTrue(userProfileEditIntroPage.getBodyText().contains(lastname));
         Assert.assertTrue(userProfileEditIntroPage.getBodyText().contains(headline));
+    }
 
+    @Test(dependsOnMethods = {"testLogin", "testUserProfile"})
+    public void testLogout() {
         // Logout
-        LogoutPage logoutPage = userProfileEditIntroPage.logout();
-
+        DashboardPage dashboardPage = logIN();
+        LogoutPage logoutPage = dashboardPage.logout();
         String logoutBodyTextContains = properties.getProperty("logout.body.text.contains");
         Assert.assertTrue(logoutPage.getBodyText().contains(logoutBodyTextContains));
 
@@ -263,11 +146,6 @@ public class SeleniumTest {
         logoutPage.navigateBackToDashboardPage();
         String dashboardPageTitle = properties.getProperty("dashboard.page.title");
         Assert.assertEquals(dashboardPageTitle, this.driver.getTitle());
-
-        JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-        String javascriptCode = "alert('Test completed.');";
-        jsExecutor.executeScript(javascriptCode);
-
     }
 
     @After

@@ -14,9 +14,6 @@ public class UserProfilePage extends PageBase{
     //private By phoneSelectionArrowLocator = By.xpath("(//div[@class=' css-84jzhn-indicatorContainer'])[2]");
     private By saveButtonLocator = By.xpath("//button[@type='submit']");
 
-    private By downArrowLocator = By.xpath("//div//i[contains(@class, 'ui-icon-chevron-down')]");
-    private By logoutLocator = By.xpath("//div//ul//li//button[contains(@class, 'btn-as-link')]");
-
 
     public UserProfilePage(WebDriver driver) {
         super(driver);
@@ -43,12 +40,6 @@ public class UserProfilePage extends PageBase{
 
         this.waitAndReturnElement(saveButtonLocator).click();
         return new UserProfilePage(this.driver);
-    }
-
-    public LogoutPage logout() {
-        this.waitAndReturnElement(downArrowLocator).click();
-        this.waitAndReturnElement(logoutLocator).click();
-        return new LogoutPage(this.driver);
     }
 
     //       this.wait.until(ExpectedConditions.visibilityOfElementLocated(countrySelectionArrowLocator)).click();
