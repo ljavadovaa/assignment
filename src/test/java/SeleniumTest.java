@@ -40,7 +40,7 @@ public class SeleniumTest {
         mainPage = new MainPage(this.driver);
     }
 
-    public DashboardPage logIN(){
+    public DashboardPage login(){
         AccessAccountPage accessAccountPage = mainPage.accessAccount();
         LoginPage loginPage = accessAccountPage.login();
         String email = properties.getProperty("user.email");
@@ -114,16 +114,26 @@ public class SeleniumTest {
         Assert.assertTrue(mainPage.getFooterText().contains(footerTextContains));
     }
 
+    @Test
+    public void testInvalidLogin() {
+        LoginPage loginPage = mainPage.accessAccount().login();
+        String email = "user.email@gmail.com";
+        String password = "user.password";
+        DashboardPage dashboardPage = loginPage.logIn(email, password);
+        String dashboardBodyTextContains = properties.getProperty("dashboard.body.text.contains");
+        Assert.assertTrue(dashboardPage.getBodyText().contains(dashboardBodyTextContains));
+    }
+
     @Test(dependsOnMethods = "testMainFooterText")
     public void testLogin() {
-        DashboardPage dashboardPage = logIN();
+        DashboardPage dashboardPage = login();
         String dashboardBodyTextContains = properties.getProperty("dashboard.body.text.contains");
         Assert.assertTrue(dashboardPage.getBodyText().contains(dashboardBodyTextContains));
     }
 
     @Test(dependsOnMethods = "testLogin")
     public void testUserProfile() {
-        DashboardPage dashboardPage = logIN();
+        DashboardPage dashboardPage = login();
         String firstname = properties.getProperty("user.profile.edit.first.name");
         String lastname = properties.getProperty("user.profile.edit.last.name");
         String headline = properties.getProperty("user.profile.edit.headline");
@@ -141,7 +151,7 @@ public class SeleniumTest {
     @Test(dependsOnMethods = {"testLogin", "testUserProfile"})
     public void testLogout() {
         // Logout
-        DashboardPage dashboardPage = logIN();
+        DashboardPage dashboardPage = login();
         LogoutPage logoutPage = dashboardPage.logout();
         String logoutBodyTextContains = properties.getProperty("logout.body.text.contains");
         Assert.assertTrue(logoutPage.getBodyText().contains(logoutBodyTextContains));
