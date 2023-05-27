@@ -8,10 +8,9 @@ public class UserProfilePage extends PageBase{
     private By firstnameLocator = By.xpath("//input[@name='personal_first_name']");
     private By lastnameLocator = By.xpath("//input[@name='personal_last_name']");
     private By headlineLocator = By.xpath("//input[@name='jobs_headline']");
-    //private By phoneLocator = By.id("phoneNumber");
-    //private By countrySelectionArrowLocator = By.xpath("(//div[@class=' css-84jzhn-indicatorContainer'])[1]");
-    //private By countrySelectionLocator = By.xpath("(//div[@class=' css-1hz4keq-singleValue'])[1]");
-    //private By phoneSelectionArrowLocator = By.xpath("(//div[@class=' css-84jzhn-indicatorContainer'])[2]");
+    private By websiteLocator = By.xpath("//input[@name='website']");
+    private By phoneLocator = By.xpath("//input[@name='phoneNumber']");
+    private By linkedInLocator = By.xpath("//input[@name='linkedin_url']");
     private By saveButtonLocator = By.xpath("//button[@type='submit']");
 
 
@@ -26,7 +25,7 @@ public class UserProfilePage extends PageBase{
         }
     }
 
-    public UserProfilePage editIntro(String firstname, String lastname, String headline) {
+    public UserProfilePage editIntro(String firstname, String lastname, String headline, String website, String phone, String linkedIn) {
         this.waitAndReturnElement(profileLocator).click();
 
         clearInput(firstnameLocator);
@@ -38,20 +37,16 @@ public class UserProfilePage extends PageBase{
         clearInput(headlineLocator);
         this.waitAndReturnElement(headlineLocator).sendKeys(headline);
 
+        clearInput(websiteLocator);
+        this.waitAndReturnElement(websiteLocator).sendKeys(website);
+
+        clearInput(phoneLocator);
+        this.waitAndReturnElement(phoneLocator).sendKeys(phone);
+
+        clearInput(linkedInLocator);
+        this.waitAndReturnElement(linkedInLocator).sendKeys(linkedIn);
+
         this.waitAndReturnElement(saveButtonLocator).click();
         return new UserProfilePage(this.driver);
     }
-
-    //       this.wait.until(ExpectedConditions.visibilityOfElementLocated(countrySelectionArrowLocator)).click();
-//       List<WebElement> countries = this.driver.findElements(countrySelectionArrowLocator);
-//        for(WebElement oneCountry : countries){
-//            System.out.println(oneCountry);
-//
-//            if(oneCountry.getText().trim().equalsIgnoreCase(country)) {
-//                By countrySelectionLocator = By.xpath("(//div[@class=' css-1hz4keq-singleValue' and contains(text(), '"+ oneCountry +"')])[1]");
-//                this.waitAndReturnElement(countrySelectionLocator).click();
-//                //oneCountry.click();
-//                System.out.println("yesss");
-//            }
-//        }
 }

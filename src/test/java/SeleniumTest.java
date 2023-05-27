@@ -127,8 +127,12 @@ public class SeleniumTest {
         String firstname = properties.getProperty("user.profile.edit.first.name");
         String lastname = properties.getProperty("user.profile.edit.last.name");
         String headline = properties.getProperty("user.profile.edit.headline");
+        String website = properties.getProperty("user.profile.edit.website");
+        String phone = properties.getProperty("user.profile.edit.phone");
+        String linkedIn = properties.getProperty("user.profile.edit.linkedIn");
         UserProfilePage userProfilePage = dashboardPage.checkProfile();
-        UserProfilePage userProfileEditIntroPage = userProfilePage.editIntro(firstname, lastname, headline);
+        UserProfilePage userProfileEditIntroPage = userProfilePage.editIntro(
+                firstname, lastname, headline, website, phone, linkedIn);
         Assert.assertTrue(userProfileEditIntroPage.getBodyText().contains(firstname));
         Assert.assertTrue(userProfileEditIntroPage.getBodyText().contains(lastname));
         Assert.assertTrue(userProfileEditIntroPage.getBodyText().contains(headline));
